@@ -1,0 +1,11 @@
+# Infrastructure as Code (Pulumi + Google Cloud + Policy-as-Code)
+pulumi>=3.130.0,<4.0.0
+pulumi-gcp>=8.0.0,<9.0.0
+pulumi-policy>=1.12.0,<2.0.0
+
+# Application & Testing (shared venv for simple local setup)
+fastapi>=0.115.0,<1.0.0
+uvicorn>=0.32.0,<1.0.0
+google-cloud-storage>=2.18.0,<3.0.0
+httpx>=0.27.0,<1.0.0
+pytest>=8.3.0,<9.0.0

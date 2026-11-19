@@ -1,0 +1,12 @@
+# Production stack configuration (Steps 1-9).
+# Before running, set your GCP project ID:
+#   pulumi stack select prod
+#   pulumi config set gcp:project YOUR_GCP_PROJECT_ID
+config:
+  gcp:region: europe-west4
+  devfest-jaen-platform:manage_registry: "true"
+  devfest-jaen-platform:greeting: "Hola DevFest Jaen 2026 from PROD Secret Manager!"
+  devfest-jaen-platform:min_instances: "0"
+  devfest-jaen-platform:max_instances: "5"
+  devfest-jaen-platform:team: "platform"
+  devfest-jaen-platform:cost_center: "cc-101"

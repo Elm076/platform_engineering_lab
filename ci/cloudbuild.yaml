@@ -1,0 +1,55 @@
+# App-only CI/CD pipeline (Steps 4 & 5).
+# Trigger manually via ./scripts/deploy_app.sh [dev|prod] or `gcloud builds submit`.
+# In production, attach two Git triggers to this pipeline:
+#   - `dev` branch  -> _ENV=dev
+#   - `main` branch -> _ENV=prod
+substitutions:
+  _ENV: prod
+  _REGION: europe-west4
+  _REPO: demo-apps
+  _APP_NAME: demo-api
+
+steps:
+  # 1. Shift-left quality gate: run FastAPI unit tests before building a container
+  - id: unit-tests
+    name: python:3.12-slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install --no-cache-dir -r app/requirements.txt pytest httpx
+        PYTHONPATH=. pytest -v app/tests/
+
+  # 2. Build container image with an immutable tag ($BUILD_ID)
+  - id: build-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_APP_NAME}:${BUILD_ID}
+      - app
+
+  # 3. Push image to Artifact Registry
+  - id: push-image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_APP_NAME}:${BUILD_ID}
+
+  # 4. Deploy only the new container image to Cloud Run (preserving IaC-managed config)
+  - id: deploy-cloud-run
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_APP_NAME}-${_ENV}
+      - --region=${_REGION}
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_APP_NAME}:${BUILD_ID}
+      - --quiet
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_APP_NAME}:${BUILD_ID}
+
+options:
+  logging: CLOUD_LOGGING_ONLY

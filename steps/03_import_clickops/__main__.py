@@ -1,0 +1,131 @@
+"""Step 3: Brownfield Adoption — Importing ClickOps Cloud Run & Artifact Registry into IaC."""
+
+from __future__ import annotations
+
+import json
+
+import pulumi
+import pulumi_gcp as gcp
+
+stack = pulumi.get_stack()
+config = pulumi.Config()
+gcp_config = pulumi.Config("gcp")
+project_id = gcp_config.require("project")
+region = gcp_config.get("region") or "europe-west4"
+greeting_value = config.get("greeting") or f"Hola DevFest Jaen 2026 ({stack})!"
+
+# --- Existing Step 1 & Step 2 resources ---
+bucket = gcp.storage.Bucket(
+    "app-storage",
+    name=f"{project_id}-demo-api-{stack}",
+    location="EUROPE-WEST4",
+    uniform_bucket_level_access=True,
+    public_access_prevention="enforced",
+    force_destroy=True,
+)
+
+seed_file = gcp.storage.BucketObject(
+    "app-storage-seed",
+    name="welcome.json",
+    bucket=bucket.name,
+    content_type="application/json",
+    content=json.dumps(
+        {
+            "message": "Hello from Google Cloud Storage managed by IaC!",
+            "env": stack,
+            "event": "DevFest Jaen 2026",
+        },
+        indent=2,
+    ),
+)
+
+greeting_secret = gcp.secretmanager.Secret(
+    "app-greeting-secret",
+    secret_id=f"demo-api-greeting-{stack}",
+    replication=gcp.secretmanager.SecretReplicationArgs(
+        auto=gcp.secretmanager.SecretReplicationAutoArgs(),
+    ),
+)
+
+greeting_version = gcp.secretmanager.SecretVersion(
+    "app-greeting-version",
+    secret=greeting_secret.id,
+    secret_data=greeting_value,
+)
+
+# --- Step 3: Imported ClickOps resources ---
+registry = gcp.artifactregistry.Repository(
+    "app-registry",
+    repository_id="demo-apps",
+    location=region,
+    format="DOCKER",
+    description="Container images for DevFest Jaen 2026 platform demo",
+)
+
+# Temporary anti-pattern: Cloud Run is still using the shared default Compute Engine SA.
+# Secret Manager excludes secret access from legacy roles/editor, so we grant it here for now
+# and replace this with a dedicated least-privilege Service Account in Step 7 (DevSecOps)!
+default_sa = gcp.compute.get_default_service_account(project=project_id)
+default_sa_secret_access = gcp.secretmanager.SecretIamMember(
+    "app-default-sa-secret-access",
+    secret_id=greeting_secret.id,
+    role="roles/secretmanager.secretAccessor",
+    member=f"serviceAccount:{default_sa.email}",
+)
+
+bootstrap_image = f"{region}-docker.pkg.dev/{project_id}/demo-apps/demo-api:v1"
+
+service = gcp.cloudrunv2.Service(
+    "app-service",
+    name=f"demo-api-{stack}",
+    location=region,
+    ingress="INGRESS_TRAFFIC_ALL",
+    deletion_protection=False,
+    template=gcp.cloudrunv2.ServiceTemplateArgs(
+        containers=[
+            gcp.cloudrunv2.ServiceTemplateContainerArgs(
+                image=bootstrap_image,
+                envs=[
+                    gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
+                        name="APP_NAME",
+                        value="demo-api",
+                    ),
+                    gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
+                        name="APP_ENV",
+                        value=stack,
+                    ),
+                    gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
+                        name="GCS_BUCKET_NAME",
+                        value=bucket.name,
+                    ),
+                    gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
+                        name="APP_GREETING",
+                        value_source=gcp.cloudrunv2.ServiceTemplateContainerEnvValueSourceArgs(
+                            secret_key_ref=gcp.cloudrunv2.ServiceTemplateContainerEnvValueSourceSecretKeyRefArgs(
+                                secret=greeting_secret.secret_id,
+                                version="latest",
+                            ),
+                        ),
+                    ),
+                ],
+            )
+        ],
+    ),
+    # IaC owns the service configuration; App CI/CD (Step 4+) owns container image rollouts.
+    opts=pulumi.ResourceOptions(
+        ignore_changes=["template.containers[0].image"],
+        depends_on=[greeting_version, default_sa_secret_access],
+    ),
+)
+
+invoker = gcp.cloudrunv2.ServiceIamMember(
+    "app-service-invoker",
+    name=service.name,
+    location=region,
+    role="roles/run.invoker",
+    member="allUsers",
+)
+
+pulumi.export("bucket_name", bucket.name)
+pulumi.export("greeting_secret_id", greeting_secret.secret_id)
+pulumi.export("service_url", service.uri)

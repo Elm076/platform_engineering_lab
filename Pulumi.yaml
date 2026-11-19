@@ -1,0 +1,18 @@
+name: devfest-jaen-platform
+description: DevFest Jaen 2026 - From Dev to Platform Engineering with Python IaC & GCP
+runtime:
+  name: python
+  options:
+    virtualenv: .venv
+
+# Switch this single line to advance through the live demo steps while
+# preserving one continuous Pulumi state across imports, diffs, and refactors:
+#   steps/01_iac_intro
+#   steps/02_secrets_lifecycle
+#   steps/03_import_clickops
+#   steps/05_multi_env
+#   steps/06_iac_unit_tests
+#   steps/07_devsecops_iam
+#   steps/08_finops_sre_guardrails
+#   steps/09_golden_path
+main: steps/01_iac_intro
