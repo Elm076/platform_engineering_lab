@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Pre-talk helper: provisions Step 0 ("ClickOps Baseline") reproducibly before going on stage.
-# During the talk, this represents an app that a developer originally deployed via ClickOps.
+# Pre-talk helper: provisions step 0 ("clickOps baseline") reproducibly before going on stage.
+# During the talk, this represents an app that a developer originally deployed via clickOps.
 set -euo pipefail
 
 PROJECT_ID="${1:-$(gcloud config get-value project 2>/dev/null || true)}"
@@ -52,7 +52,7 @@ if ! gcloud artifacts repositories describe "${REPO_NAME}" \
   gcloud artifacts repositories create "${REPO_NAME}" \
     --repository-format=docker \
     --location="${REGION}" \
-    --description="Container images for DevFest Jaen 2026 platform demo" \
+    --description="Container images for DevFest Jaén 2026 platform demo" \
     --project="${PROJECT_ID}"
 else
   echo "    Repository '${REPO_NAME}' already exists, skipping."
@@ -64,7 +64,7 @@ gcloud builds submit app \
   --project="${PROJECT_ID}" \
   --region="${REGION}"
 
-echo "==> 5/5 Deploying initial ClickOps Cloud Run service '${SERVICE_NAME}'..."
+echo "==> 5/5 Deploying initial clickOps Cloud Run service '${SERVICE_NAME}'..."
 gcloud run deploy "${SERVICE_NAME}" \
   --image="${IMAGE_URI}" \
   --region="${REGION}" \
@@ -73,18 +73,19 @@ gcloud run deploy "${SERVICE_NAME}" \
   --set-env-vars="APP_NAME=${APP_NAME},APP_ENV=prod" \
   --quiet
 
-SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" \
+PROD_URL="$(gcloud run services describe "${SERVICE_NAME}" \
   --region="${REGION}" \
   --project="${PROJECT_ID}" \
   --format='value(status.url)')"
 
 echo ""
 echo "=================================================================="
-echo "Step 0 (ClickOps Baseline) is ready!"
-echo "Service URL: ${SERVICE_URL}"
+echo "Step 0 (clickOps baseline) is ready!"
+echo "Service URL: ${PROD_URL}"
 echo ""
 echo "Try:"
-echo "  curl -s ${SERVICE_URL}/ | python3 -m json.tool"
-echo "  curl -s ${SERVICE_URL}/health | python3 -m json.tool"
-echo "  curl -s ${SERVICE_URL}/storage | python3 -m json.tool"
+echo "  export PROD_URL=\"${PROD_URL}\""
+echo "  curl -s \"\${PROD_URL}/\" | python3 -m json.tool"
+echo "  curl -s \"\${PROD_URL}/health\" | python3 -m json.tool"
+echo "  curl -s \"\${PROD_URL}/storage\" | python3 -m json.tool"
 echo "=================================================================="

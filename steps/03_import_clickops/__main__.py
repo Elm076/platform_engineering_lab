@@ -1,4 +1,4 @@
-"""Step 3: Brownfield Adoption — Importing ClickOps Cloud Run & Artifact Registry into IaC."""
+"""Step 3: Brownfield adoption — Importing clickOps Cloud Run & Artifact Registry into IaC."""
 
 from __future__ import annotations
 
@@ -12,9 +12,9 @@ config = pulumi.Config()
 gcp_config = pulumi.Config("gcp")
 project_id = gcp_config.require("project")
 region = gcp_config.get("region") or "europe-west4"
-greeting_value = config.get("greeting") or f"Hola DevFest Jaen 2026 ({stack})!"
+greeting_value = config.get("greeting") or f"Hola DevFest Jaén 2026 ({stack})!"
 
-# --- Existing Step 1 & Step 2 resources ---
+# --- Existing step 1 & step 2 resources ---
 bucket = gcp.storage.Bucket(
     "app-storage",
     name=f"{project_id}-demo-api-{stack}",
@@ -33,7 +33,7 @@ seed_file = gcp.storage.BucketObject(
         {
             "message": "Hello from Google Cloud Storage managed by IaC!",
             "env": stack,
-            "event": "DevFest Jaen 2026",
+            "event": "DevFest Jaén 2026",
         },
         indent=2,
     ),
@@ -53,13 +53,13 @@ greeting_version = gcp.secretmanager.SecretVersion(
     secret_data=greeting_value,
 )
 
-# --- Step 3: Imported ClickOps resources ---
+# --- Step 3: Imported clickOps resources ---
 registry = gcp.artifactregistry.Repository(
     "app-registry",
     repository_id="demo-apps",
     location=region,
     format="DOCKER",
-    description="Container images for DevFest Jaen 2026 platform demo",
+    description="Container images for DevFest Jaén 2026 platform demo",
 )
 
 # Temporary anti-pattern: Cloud Run is still using the shared default Compute Engine SA.
@@ -111,7 +111,7 @@ service = gcp.cloudrunv2.Service(
             )
         ],
     ),
-    # IaC owns the service configuration; App CI/CD (Step 4+) owns container image rollouts.
+    # IaC owns the service configuration; App CI/CD (step 4+) owns container image rollouts.
     opts=pulumi.ResourceOptions(
         ignore_changes=["template.containers[0].image"],
         depends_on=[greeting_version, default_sa_secret_access],
@@ -127,5 +127,6 @@ invoker = gcp.cloudrunv2.ServiceIamMember(
 )
 
 pulumi.export("bucket_name", bucket.name)
+pulumi.export("seed_file", seed_file.name)
 pulumi.export("greeting_secret_id", greeting_secret.secret_id)
 pulumi.export("service_url", service.uri)

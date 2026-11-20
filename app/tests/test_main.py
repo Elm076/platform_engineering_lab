@@ -1,4 +1,4 @@
-"""Unit tests for the FastAPI JSON demo application (Step 4: App CI/CD)."""
+"""Unit tests for the FastAPI JSON demo application (step 4: App CI/CD)."""
 
 from __future__ import annotations
 

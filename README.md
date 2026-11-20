@@ -27,41 +27,41 @@
 1. New alternatives for IaC available: Python & coding languages vs HCL, Pulumi vs Terraform.
 1. Developers can leverage their previous coding experience for platform engineering / IaC.
 
-## Quick Start
+## Quick start
 
-Want to run this demo on your own Google Cloud project? See the complete [Local & GCP Setup Guide](docs/SETUP.md).
+Want to run this demo on your own Google Cloud project? See the complete [Local & GCP setup guide](SETUP.md).
 
-## Demo Progression (ClickOps → Golden Path Platform)
+## Demo progression (clickOps → golden path platform)
 
-This repository uses a single root `Pulumi.yaml` pointing to sequential folders under `steps/` (`main: steps/XX_...`). Switching that single line preserves continuous IaC state while keeping every step clean and readable.
+This repository uses a single root `Pulumi.yaml` Pulumi project pointing to sequential folders under `steps/` (`main: steps/XX_...`). Switching that line in `Pulumi.yaml` preserves continuous IaC state while keeping every step clean and readable.
 
 | Step | Folder | Platform Engineering Concept |
 | :---: | :--- | :--- |
-| **0** | [`steps/00_clickops_baseline`](steps/00_clickops_baseline/) | FastAPI JSON API deployed to Cloud Run via ClickOps (pre-provisioned with `scripts/setup_clickops.sh`) |
-| **1** | [`steps/01_iac_intro`](steps/01_iac_intro/) | First IaC resources in Python (GCS bucket + seed JSON file) + HCL vs. Python comparison |
-| **2** | [`steps/02_secrets_lifecycle`](steps/02_secrets_lifecycle/) | IaC CRUD workflow, surgical diffs, and idempotency using Secret Manager |
-| **3** | [`steps/03_import_clickops`](steps/03_import_clickops/) | Brownfield adoption: importing existing Cloud Run + Artifact Registry into IaC |
-| **4** | [`steps/04_app_cicd`](steps/04_app_cicd/) | Early automation: FastAPI `pytest` unit tests + Cloud Build CI/CD pipeline (`ci/cloudbuild.yaml`) |
-| **5** | [`steps/05_multi_env`](steps/05_multi_env/) | Multi-environment delivery (`prod` + `dev` stacks in one GCP project for demo) + 2 CI/CD targets |
-| **6** | [`steps/06_iac_unit_tests`](steps/06_iac_unit_tests/) | Testing infrastructure like app code (`pytest` + Pulumi mocks catching 2 planted bugs in <1s) |
-| **7** | [`steps/07_devsecops_iam`](steps/07_devsecops_iam/) | DevSecOps: replacing the default Compute Engine SA with dedicated least-privilege IAM per app |
-| **8** | [`steps/08_finops_sre_guardrails`](steps/08_finops_sre_guardrails/) | FinOps labels/caps + Cloud Monitoring AlertPolicy + Python Policy-as-Code (`policy/`) |
-| **9** | [`steps/09_golden_path`](steps/09_golden_path/) | Reusable Golden Path (`PlatformService` ComponentResource + zero-downtime aliases) + 2nd app live |
+| 0 | [`steps/00_clickops_baseline`](steps/00_clickops_baseline/) | FastAPI JSON API deployed to Cloud Run via clickOps (pre-provisioned with `scripts/setup_clickops.sh`) |
+| 1 | [`steps/01_iac_intro`](steps/01_iac_intro/) | First IaC resources in Python (GCS bucket + seed JSON file) + HCL vs. Python comparison |
+| 2 | [`steps/02_secrets_lifecycle`](steps/02_secrets_lifecycle/) | IaC CRUD workflow, surgical diffs, and idempotency using Secret Manager |
+| 3 | [`steps/03_import_clickops`](steps/03_import_clickops/) | Brownfield adoption: importing existing Cloud Run + Artifact Registry into IaC |
+| 4 | [`steps/04_app_cicd`](steps/04_app_cicd/) | Early automation: FastAPI `pytest` unit tests + Cloud Build CI/CD pipeline (`ci/cloudbuild.yaml`) |
+| 5 | [`steps/05_multi_env`](steps/05_multi_env/) | Multi-env delivery (`prod` + `dev` stacks) + 2 CI/CD targets |
+| 6 | [`steps/06_iac_unit_tests`](steps/06_iac_unit_tests/) | Testing infrastructure (`pytest` + Pulumi mocks w/ 2 planted bugs) |
+| 7 | [`steps/07_devsecops_iam`](steps/07_devsecops_iam/) | DevSecOps: replace default Compute Engine SA with dedicated least-privilege IAM per app |
+| 8 | [`steps/08_finops_sre_guardrails`](steps/08_finops_sre_guardrails/) | finOps labels/caps + Cloud Monitoring alert policy + Python Policy-as-Code (`policy/`) |
+| 9 | [`steps/09_golden_path`](steps/09_golden_path/) | Reusable "golden path" (`PlatformService` ComponentResource + zero-downtime aliases) + 2nd app live |
 
-### Repository Structure
+### Repository structure
 
 ```text
 .
 ├── Pulumi.yaml                # Single project; switch `main:` to advance steps
-├── Pulumi.prod.yaml           # Production stack configuration (europe-west4)
-├── Pulumi.dev.yaml            # Development stack configuration (used from Step 5)
+├── Pulumi.prod.yaml           # Production stack config
+├── Pulumi.dev.yaml            # Development stack config (step 5 onwards)
 ├── requirements.txt           # Shared Python dependencies (.venv)
-├── docs/SETUP.md              # GCP project setup, CLI install, auth & cleanup guide
-├── app/                       # FastAPI JSON application, Dockerfile & pytest suite
+├── SETUP.md                   # GCP project setup, CLI install, auth & cleanup guide
+├── app/                       # FastAPI JSON API, Dockerfile & pytest suite
 ├── ci/cloudbuild.yaml         # Cloud Build app pipeline (pytest → build → push → deploy)
-├── policy/                    # Python Policy-as-Code pack (FinOps, EU region, security)
+├── policy/                    # Python Policy-as-Code pack (finOps, EU region, security)
 ├── scripts/                   # setup_clickops.sh, deploy_app.sh, cleanup.sh
-└── steps/                     # Progressive folders 00 through 09
+└── steps/                     # Progressive step folders 00-09
 ```
 
 ## License

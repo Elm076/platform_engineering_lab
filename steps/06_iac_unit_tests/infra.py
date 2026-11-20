@@ -30,7 +30,7 @@ def create_app_infrastructure(
     max_instances: int = 5,
 ) -> AppInfra:
     """Create the application stack (intentionally contains 2 planted bugs for Step 6)."""
-    greeting = greeting_value or f"Hola DevFest Jaen 2026 ({stack})!"
+    greeting = greeting_value or f"Hola DevFest Jaén 2026 ({stack})!"
 
     # BUG 1 (Security): Public access prevention disabled and legacy bucket ACLs allowed!
     # Fix live on stage: set uniform_bucket_level_access=True and public_access_prevention="enforced".
@@ -52,7 +52,7 @@ def create_app_infrastructure(
             {
                 "message": "Hello from Google Cloud Storage managed by IaC!",
                 "env": stack,
-                "event": "DevFest Jaen 2026",
+                "event": "DevFest Jaén 2026",
             },
             indent=2,
         ),
@@ -78,7 +78,7 @@ def create_app_infrastructure(
             repository_id="demo-apps",
             location=region,
             format="DOCKER",
-            description="Container images for DevFest Jaen 2026 platform demo",
+            description="Container images for DevFest Jaén 2026 platform demo",
         )
 
     default_sa = gcp.compute.get_default_service_account(project=project_id)

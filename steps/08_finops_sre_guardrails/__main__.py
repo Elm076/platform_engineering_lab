@@ -1,4 +1,4 @@
-"""Step 8: FinOps + SRE Observability + Policy-as-Code Guardrails."""
+"""Step 8: finOps + SRE observability + Policy-as-Code guardrails."""
 
 from __future__ import annotations
 
@@ -14,13 +14,13 @@ gcp_config = pulumi.Config("gcp")
 project_id = gcp_config.require("project")
 region = gcp_config.get("region") or "europe-west4"
 manage_registry = config.get_bool("manage_registry") or False
-greeting_value = config.get("greeting") or f"Hola DevFest Jaen 2026 ({stack})!"
+greeting_value = config.get("greeting") or f"Hola DevFest Jaén 2026 ({stack})!"
 min_instances = config.get_int("min_instances") or 0
 max_instances = config.get_int("max_instances") or 3
 team = config.get("team") or "platform"
 cost_center = config.get("cost_center") or "cc-101"
 
-# --- FinOps cost-attribution labels enforced by policy/__main__.py ---
+# --- finOps cost-attribution labels enforced by policy/__main__.py ---
 finops_labels = {
     "env": stack,
     "team": team,
@@ -28,7 +28,7 @@ finops_labels = {
     "managed-by": "iac",
 }
 
-# --- Storage with FinOps labels + 30-day auto-cleanup lifecycle rule in dev ---
+# --- Storage with finOps labels + 30-day auto-cleanup lifecycle rule in dev ---
 bucket = gcp.storage.Bucket(
     "app-storage",
     name=f"{project_id}-demo-api-{stack}",
@@ -58,7 +58,7 @@ seed_file = gcp.storage.BucketObject(
         {
             "message": "Hello from Google Cloud Storage managed by IaC!",
             "env": stack,
-            "event": "DevFest Jaen 2026",
+            "event": "DevFest Jaén 2026",
         },
         indent=2,
     ),
@@ -85,7 +85,7 @@ if manage_registry:
         repository_id="demo-apps",
         location=region,
         format="DOCKER",
-        description="Container images for DevFest Jaen 2026 platform demo",
+        description="Container images for DevFest Jaén 2026 platform demo",
         labels=finops_labels,
     )
 
@@ -112,7 +112,7 @@ bucket_viewer = gcp.storage.BucketIAMMember(
 
 bootstrap_image = f"{region}-docker.pkg.dev/{project_id}/demo-apps/demo-api:v1"
 
-# --- Cloud Run with FinOps labels, CPU/memory ceiling, cpu_idle & scaling cap ---
+# --- Cloud Run with finOps labels, CPU/memory ceiling, cpu_idle & scaling cap ---
 service = gcp.cloudrunv2.Service(
     "app-service",
     name=f"demo-api-{stack}",
@@ -134,7 +134,7 @@ service = gcp.cloudrunv2.Service(
                 image=bootstrap_image,
                 resources=gcp.cloudrunv2.ServiceTemplateContainerResourcesArgs(
                     limits={"cpu": "1", "memory": "512Mi"},
-                    cpu_idle=True,  # FinOps: only bill CPU while handling requests
+                    cpu_idle=True,  # finOps: only bill CPU while handling requests
                 ),
                 envs=[
                     gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
@@ -176,11 +176,11 @@ invoker = gcp.cloudrunv2.ServiceIamMember(
     member="allUsers",
 )
 
-# --- SRE Observability + FinOps anomaly detection ---
+# --- SRE observability + finOps anomaly detection ---
 alert_threshold = max(1, max_instances - 1)
 instance_alert = gcp.monitoring.AlertPolicy(
     "app-instance-alert",
-    display_name=f"[FinOps/SRE] High Cloud Run instances - demo-api-{stack}",
+    display_name=f"[finOps/SRE] High Cloud Run instances - demo-api-{stack}",
     combiner="OR",
     conditions=[
         gcp.monitoring.AlertPolicyConditionArgs(
@@ -210,5 +210,6 @@ instance_alert = gcp.monitoring.AlertPolicy(
 pulumi.export("env", stack)
 pulumi.export("service_account", app_sa.email)
 pulumi.export("bucket_name", bucket.name)
+pulumi.export("seed_file", seed_file.name)
 pulumi.export("service_url", service.uri)
 pulumi.export("alert_policy_name", instance_alert.name)

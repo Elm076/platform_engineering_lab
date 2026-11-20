@@ -1,4 +1,4 @@
-"""Step 1: Introduction to IaC in Python — GCS Bucket + Initial Seed File."""
+"""Step 1: Introduction to IaC in Python — GCS bucket + initial seed file."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ seed_file = gcp.storage.BucketObject(
         {
             "message": "Hello from Google Cloud Storage managed by IaC!",
             "env": stack,
-            "event": "DevFest Jaen 2026",
+            "event": "DevFest Jaén 2026",
         },
         indent=2,
     ),

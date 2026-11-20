@@ -25,7 +25,7 @@ resource "google_storage_bucket_object" "app_storage_seed" {
   content = jsonencode({
     message = "Hello from Google Cloud Storage managed by IaC!"
     env     = var.env
-    event   = "DevFest Jaen 2026"
+    event   = "DevFest Jaén 2026"
   })
 }
 

@@ -21,5 +21,6 @@ resources = create_app_infrastructure(
 
 pulumi.export("env", stack)
 pulumi.export("bucket_name", resources.bucket.name)
+pulumi.export("seed_file", resources.seed_file.name)
 pulumi.export("greeting_secret_id", resources.greeting_secret.secret_id)
 pulumi.export("service_url", resources.service.uri)

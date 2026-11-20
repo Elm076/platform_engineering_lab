@@ -5,7 +5,7 @@
 config:
   gcp:region: europe-west4
   devfest-jaen-platform:manage_registry: "true"
-  devfest-jaen-platform:greeting: "Hola DevFest Jaen 2026 from PROD Secret Manager!"
+  devfest-jaen-platform:greeting: "Hola DevFest Jaén 2026 from PROD Secret Manager!"
   devfest-jaen-platform:min_instances: "0"
   devfest-jaen-platform:max_instances: "5"
   devfest-jaen-platform:team: "platform"

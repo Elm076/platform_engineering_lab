@@ -1,4 +1,4 @@
-# App-only CI/CD pipeline (Steps 4 & 5).
+# App-only CI/CD pipeline (steps 4 & 5).
 # Trigger manually via ./scripts/deploy_app.sh [dev|prod] or `gcloud builds submit`.
 # In production, attach two Git triggers to this pipeline:
 #   - `dev` branch  -> _ENV=dev
@@ -12,7 +12,7 @@ substitutions:
 steps:
   # 1. Shift-left quality gate: run FastAPI unit tests before building a container
   - id: unit-tests
-    name: python:3.12-slim
+    name: python:3.14-slim
     entrypoint: bash
     args:
       - -c

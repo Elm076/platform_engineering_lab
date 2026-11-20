@@ -1,4 +1,4 @@
-"""Python Policy-as-Code (Pulumi CrossGuard) guardrails for FinOps & Security (Step 8+).
+"""Python Policy-as-Code (Pulumi CrossGuard) guardrails for finOps & Security (Step 8+).
 
 Run against any step with:
     pulumi preview --policy-pack policy
@@ -42,7 +42,7 @@ def _validate_finops_labels(
     missing = [key for key in REQUIRED_FINOPS_LABELS if not labels.get(key)]
     if missing:
         report_violation(
-            f"FinOps violation: resource '{args.name}' is missing required labels: "
+            f"finOps violation: resource '{args.name}' is missing required labels: "
             f"{', '.join(missing)}."
         )
 
@@ -78,13 +78,13 @@ def _validate_cloudrun_cost_ceiling(
 
     if max_instances is None or max_instances > MAX_CLOUD_RUN_INSTANCES:
         report_violation(
-            f"FinOps ceiling violation: Cloud Run '{args.name}' must set "
+            f"finOps ceiling violation: Cloud Run '{args.name}' must set "
             f"max_instance_count <= {MAX_CLOUD_RUN_INSTANCES} (got {max_instances})."
         )
 
     if labels.get("env") == "dev" and min_instances > 0:
         report_violation(
-            f"FinOps scale-to-zero violation: dev Cloud Run '{args.name}' must keep "
+            f"finOps scale-to-zero violation: dev Cloud Run '{args.name}' must keep "
             f"min_instance_count == 0 (got {min_instances})."
         )
 

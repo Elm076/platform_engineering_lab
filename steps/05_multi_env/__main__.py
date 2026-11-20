@@ -1,4 +1,4 @@
-"""Step 5: Multi-Environment Delivery — prod + dev Stacks from One Codebase."""
+"""Step 5: Multi-environment delivery — prod + dev stacks from one codebase."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ gcp_config = pulumi.Config("gcp")
 project_id = gcp_config.require("project")
 region = gcp_config.get("region") or "europe-west4"
 manage_registry = config.get_bool("manage_registry") or False
-greeting_value = config.get("greeting") or f"Hola DevFest Jaen 2026 ({stack})!"
+greeting_value = config.get("greeting") or f"Hola DevFest Jaén 2026 ({stack})!"
 min_instances = config.get_int("min_instances") or 0
 max_instances = config.get_int("max_instances") or 3
 
@@ -39,7 +39,7 @@ seed_file = gcp.storage.BucketObject(
         {
             "message": "Hello from Google Cloud Storage managed by IaC!",
             "env": stack,
-            "event": "DevFest Jaen 2026",
+            "event": "DevFest Jaén 2026",
         },
         indent=2,
     ),
@@ -67,10 +67,10 @@ if manage_registry:
         repository_id="demo-apps",
         location=region,
         format="DOCKER",
-        description="Container images for DevFest Jaen 2026 platform demo",
+        description="Container images for DevFest Jaén 2026 platform demo",
     )
 
-# Still using default Compute Engine SA — we fix this in Step 7 (DevSecOps).
+# Still using default Compute Engine SA — we fix this in step 7 (DevSecOps).
 default_sa = gcp.compute.get_default_service_account(project=project_id)
 default_sa_secret_access = gcp.secretmanager.SecretIamMember(
     "app-default-sa-secret-access",
@@ -137,5 +137,6 @@ invoker = gcp.cloudrunv2.ServiceIamMember(
 
 pulumi.export("env", stack)
 pulumi.export("bucket_name", bucket.name)
+pulumi.export("seed_file", seed_file.name)
 pulumi.export("greeting_secret_id", greeting_secret.secret_id)
 pulumi.export("service_url", service.uri)

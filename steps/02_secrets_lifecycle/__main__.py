@@ -1,4 +1,4 @@
-"""Step 2: IaC Lifecycle — Adding, Modifying, Deleting Resources & Idempotency."""
+"""Step 2: IaC lifecycle — Adding, modifying, deleting resources & idempotency."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ stack = pulumi.get_stack()
 config = pulumi.Config()
 gcp_config = pulumi.Config("gcp")
 project_id = gcp_config.require("project")
-greeting_value = config.get("greeting") or f"Hola DevFest Jaen 2026 ({stack})!"
+greeting_value = config.get("greeting") or f"Hola DevFest Jaén 2026 ({stack})!"
 
 # --- Existing Step 1 resources (untouched by our Secret Manager changes!) ---
 bucket = gcp.storage.Bucket(
@@ -32,7 +32,7 @@ seed_file = gcp.storage.BucketObject(
         {
             "message": "Hello from Google Cloud Storage managed by IaC!",
             "env": stack,
-            "event": "DevFest Jaen 2026",
+            "event": "DevFest Jaén 2026",
         },
         indent=2,
     ),
@@ -72,4 +72,5 @@ feature_flag_version = gcp.secretmanager.SecretVersion(
 )
 
 pulumi.export("bucket_name", bucket.name)
+pulumi.export("seed_file", seed_file.name)
 pulumi.export("greeting_secret_id", greeting_secret.secret_id)

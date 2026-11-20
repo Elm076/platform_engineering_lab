@@ -6,6 +6,7 @@ Run from repo root:
 
 from __future__ import annotations
 
+import asyncio
 import sys
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,13 @@ class GcpMocks(pulumi.runtime.Mocks):
             return {"email": "123456789-compute@developer.gserviceaccount.com"}
         return {}
 
+
+# Python 3.14+ no longer auto-creates a default event loop in asyncio.get_event_loop(),
+# which pulumi.runtime.set_mocks() relies on when initializing the mock Stack.
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 pulumi.runtime.set_mocks(GcpMocks(), preview=False)
 
@@ -71,7 +79,7 @@ def test_bucket_enforces_private_access() -> pulumi.Output[None]:
 
 @pulumi.runtime.test
 def test_prod_cloud_run_scaling_avoids_bottleneck() -> pulumi.Output[None]:
-    """BUG 2 check: prod must allow at least 2 instances (and stay <= 10 for FinOps)."""
+    """BUG 2 check: prod must allow at least 2 instances (and stay <= 10 for finOps)."""
 
     def check(template: Any) -> None:
         max_instances = template.scaling.max_instance_count

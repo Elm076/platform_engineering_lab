@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Clean teardown of Pulumi stacks (dev first, then prod) and any remaining Step 0 ClickOps resources.
+# Clean teardown of Pulumi stacks (dev first, then prod) and any remaining step 0 clickOps resources.
 set -euo pipefail
 
 PROJECT_ID="${1:-$(gcloud config get-value project 2>/dev/null || true)}"
@@ -22,7 +22,7 @@ if command -v pulumi >/dev/null 2>&1; then
   done
 fi
 
-echo "==> Ensuring Step 0 ClickOps resources are removed if not managed by Pulumi..."
+echo "==> Ensuring step 0 clickOps resources are removed if not managed by Pulumi..."
 gcloud run services delete demo-api-prod \
   --region="${REGION}" \
   --project="${PROJECT_ID}" \

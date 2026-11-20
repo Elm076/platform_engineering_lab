@@ -1,15 +1,17 @@
-# Step 7 — DevSecOps: Least-Privilege Identity & Resource-Scoped IAM
+# Step 7 — DevSecOps: Least-privilege identity & resource-scoped IAM
 
 ## Concept
+
 Until now, our Cloud Run service has been running as the **default Compute Engine Service Account** — an identity shared across the whole project and often granted overly broad roles like `roles/editor`.
 
-With **DevSecOps in IaC**, we bake least-privilege security right into the stack:
+With **devSecOps in IaC**, we bake least-privilege security right into the stack:
+
 1. Create a dedicated Service Account per app & environment (`demo-api-{stack}-sa`).
 2. Grant **only** `roles/secretmanager.secretAccessor` scoped to this app's single secret.
 3. Grant **only** `roles/storage.objectViewer` scoped to this app's single bucket (since `/storage` only lists objects).
 4. Notice `pulumi preview` also cleanly **removes** the temporary `app-default-sa-secret-access` binding from Step 3!
 
-## Live Stage Commands
+## Live stage sequence
 
 Update `Pulumi.yaml`:
 

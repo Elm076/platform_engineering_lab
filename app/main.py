@@ -1,4 +1,4 @@
-"""Minimal JSON FastAPI application for the DevFest Jaen 2026 Platform Engineering demo."""
+"""Minimal JSON FastAPI application for the DevFest Jaén 2026 Platform Engineering demo."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from google.cloud import storage
 
 app = FastAPI(
-    title="DevFest Jaen 2026 Demo API",
+    title="DevFest Jaén 2026 Demo API",
     version="1.0.0",
 )
 
@@ -50,13 +50,13 @@ def health() -> dict[str, str]:
 
 @app.get("/")
 def root() -> dict[str, Any]:
-    """Return service metadata and greeting (wired from Secret Manager in Step 3+)."""
+    """Return service metadata and greeting (wired from Secret Manager in step 3+)."""
     response: dict[str, Any] = {
         "service": os.getenv("APP_NAME", "demo-api"),
         "env": os.getenv("APP_ENV", "clickops"),
         "greeting": os.getenv(
             "APP_GREETING",
-            "Hello DevFest Jaen 2026! (deployed via ClickOps)",
+            "Hello DevFest Jaén 2026! (deployed via clickOps)",
         ),
         "storage_configured": bool(os.getenv("GCS_BUCKET_NAME")),
     }

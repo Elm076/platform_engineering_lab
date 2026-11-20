@@ -1,4 +1,4 @@
-"""Step 9: Reusable Golden Path — PlatformService ComponentResource."""
+"""Step 9: Reusable golden path — PlatformService ComponentResource."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import pulumi_gcp as gcp
 
 @dataclass
 class PlatformServiceArgs:
-    """Developer-facing contract for onboarding any web service onto the Golden Path."""
+    """Developer-facing contract for onboarding any web service onto the golden path."""
 
     app_name: str
     env: str
@@ -27,19 +27,20 @@ class PlatformServiceArgs:
     cpu: str = "1"
     memory: str = "512Mi"
     extra_env: dict[str, str] = field(default_factory=dict)
-    # Set True only when migrating Step 8's root-level resources into this component
+    # Set True only when migrating step 8's root-level resources into this component
     # with zero downtime and zero replacement!
     migrate_from_root: bool = False
 
 
 class PlatformService(pulumi.ComponentResource):
-    """Golden Path abstraction bundling Cloud Run, least-privilege IAM, Secrets,
-    optional GCS storage, FinOps guardrails, and SRE Monitoring alerts.
+    """Golden path abstraction bundling Cloud Run, least-privilege IAM, Secrets,
+    optional GCS storage, finOps guardrails, and SRE Monitoring alerts.
     """
 
     service_url: pulumi.Output[str]
     service_account: pulumi.Output[str]
     bucket_name: pulumi.Output[str] | None
+    seed_file: pulumi.Output[str] | None
     alert_policy_name: pulumi.Output[str]
 
     def __init__(
@@ -95,6 +96,7 @@ class PlatformService(pulumi.ComponentResource):
         # 3. Optional private GCS bucket + seed file + read-only IAM
         service_deps: list[pulumi.Resource] = [greeting_version, secret_accessor]
         bucket: gcp.storage.Bucket | None = None
+        seed_file: gcp.storage.BucketObject | None = None
         if args.enable_storage:
             bucket = gcp.storage.Bucket(
                 f"{name}-storage",
@@ -117,16 +119,16 @@ class PlatformService(pulumi.ComponentResource):
                 opts=self._child_opts("app-storage"),
             )
 
-            gcp.storage.BucketObject(
+            seed_file = gcp.storage.BucketObject(
                 f"{name}-storage-seed",
                 name="welcome.json",
                 bucket=bucket.name,
                 content_type="application/json",
                 content=json.dumps(
                     {
-                        "message": f"Hello from {args.app_name} storage managed by Golden Path!",
+                        "message": f"Hello from {args.app_name} storage managed by golden path!",
                         "env": args.env,
-                        "event": "DevFest Jaen 2026",
+                        "event": "DevFest Jaén 2026",
                     },
                     indent=2,
                 ),
@@ -142,7 +144,7 @@ class PlatformService(pulumi.ComponentResource):
             )
             service_deps.append(bucket_viewer)
 
-        # 4. Cloud Run v2 Service with FinOps caps & app-specific env vars
+        # 4. Cloud Run v2 Service with finOps caps & app-specific env vars
         env_vars = [
             gcp.cloudrunv2.ServiceTemplateContainerEnvArgs(
                 name="APP_NAME",
@@ -215,11 +217,11 @@ class PlatformService(pulumi.ComponentResource):
             opts=self._child_opts("app-service-invoker"),
         )
 
-        # 5. SRE Observability & FinOps spike alert
+        # 5. SRE observability & finOps spike alert
         alert_threshold = max(1, args.max_instances - 1)
         instance_alert = gcp.monitoring.AlertPolicy(
             f"{name}-instance-alert",
-            display_name=f"[FinOps/SRE] High Cloud Run instances - {args.app_name}-{args.env}",
+            display_name=f"[finOps/SRE] High Cloud Run instances - {args.app_name}-{args.env}",
             combiner="OR",
             conditions=[
                 gcp.monitoring.AlertPolicyConditionArgs(
@@ -250,6 +252,7 @@ class PlatformService(pulumi.ComponentResource):
         self.service_url = service.uri
         self.service_account = app_sa.email
         self.bucket_name = bucket.name if bucket is not None else None
+        self.seed_file = seed_file.name if seed_file is not None else None
         self.alert_policy_name = instance_alert.name
 
         self.register_outputs(
@@ -257,6 +260,7 @@ class PlatformService(pulumi.ComponentResource):
                 "service_url": self.service_url,
                 "service_account": self.service_account,
                 "bucket_name": self.bucket_name,
+                "seed_file": self.seed_file,
                 "alert_policy_name": self.alert_policy_name,
             }
         )

@@ -1,5 +1,5 @@
 name: devfest-jaen-platform
-description: DevFest Jaen 2026 - From Dev to Platform Engineering with Python IaC & GCP
+description: DevFest Jaén 2026 - From Dev to Platform Engineering with Python IaC & GCP
 runtime:
   name: python
   options:

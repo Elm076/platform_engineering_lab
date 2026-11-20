@@ -2,4 +2,4 @@ runtime:
   name: python
   options:
     virtualenv: ../.venv
-description: FinOps, data-residency, and security guardrails for DevFest Jaen 2026
+description: finOps, data-residency, and security guardrails for DevFest Jaén 2026
