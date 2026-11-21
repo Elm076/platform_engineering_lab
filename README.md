@@ -6,7 +6,7 @@
 - Consultant, architect & trainer - 14 years of experience
 - Google Cloud, data/Gemini, Pulumi, finOps
 - Google Cloud Authorized Trainer
-- [Google Developer Expert in Google Cloud](https://drive.google.com/file/d/1SSB5_mPqR6RmTjyXCkndzRCLp9PTgHEf/view?usp=sharing)
+- [Google Developer Expert in Google Cloud](https://drive.google.com/file/d/1v7onIczqx9pL_tjRUJ2Eriov3oVhga5Y/view?usp=sharing)
 - Puluminary
 - Former community organizer: GDG Almería, GDG Cloud Español, DataBeers ALM, Club Python Almería, Hacklab Almería, etc.
 - Contact:
