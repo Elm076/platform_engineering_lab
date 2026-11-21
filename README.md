@@ -17,7 +17,7 @@
 
 ## Session
 
-- TODO QR to this repo
+- QR to LinkedIn pub: <https://bit.ly/devfestjaen-platformengineer>
 - [DevFest Jaén 2026 (21/Nov/26)](https://gdg-jaen.netlify.app)
 
 ## Contents
