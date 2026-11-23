@@ -64,6 +64,26 @@ This repository uses a single root `Pulumi.yaml` Pulumi project pointing to sequ
 └── steps/                     # Progressive step folders 00-09
 ```
 
+## Cleanup & reset
+
+When you finish the demo (or want to reset everything to deliver it again from step 0), run:
+
+```bash
+./scripts/cleanup.sh
+# Optional: override the default gcloud project (and region, default: europe-west4)
+# ./scripts/cleanup.sh ["$GCP_PROJECT"] [REGION]
+```
+
+`scripts/cleanup.sh` will:
+
+1. Destroy all cloud resources in the `dev` and `prod` Pulumi stacks and delete both stacks **without deleting** `Pulumi.dev.yaml` or `Pulumi.prod.yaml` (`--preserve-config`).
+2. Delete any remaining step 0 clickOps resources (`demo-api-prod` Cloud Run service and `demo-apps` Artifact Registry repository + container images).
+3. Restore all Python files modified during steps 0–9 (`steps/`, `app/`, `policy/`), `ci/`, and Pulumi YAML files (`Pulumi.yaml` back to `steps/01_iac_intro`, plus clean `Pulumi.prod.yaml` and `Pulumi.dev.yaml`) so the repository is back in its initial state (preserving `.venv/`).
+
+> **Note:** Step 3 runs `git checkout HEAD -- Pulumi.yaml Pulumi.prod.yaml Pulumi.dev.yaml steps app policy ci` and `git clean -fd -- steps app policy ci`. This will discard **any** uncommitted edits or untracked files you made in those paths—not only changes made while following steps 0–9. Commit or stash your changes first if you want to keep them.
+
+Project-level setup from `scripts/setup_clickops.sh` that is free when idle and idempotent (enabled GCP APIs, Cloud Build IAM bindings, and Cloud Build history/staging bucket) is intentionally left intact. See [SETUP.md](SETUP.md) for the complete setup and teardown guide.
+
 ## License
 
 CC BY 4.0 (see `LICENSE.md`).
