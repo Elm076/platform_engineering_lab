@@ -5,3 +5,8 @@ __pycache__/
 .pulumi/
 *.egg-info/
 .DS_Store
+google-cloud-sdk/
+*.gz
+.vscode/
+EXPLANATION.md
+.agents

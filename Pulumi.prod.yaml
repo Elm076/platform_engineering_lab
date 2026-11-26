@@ -10,3 +10,5 @@ config:
   devfest-jaen-platform:max_instances: "5"
   devfest-jaen-platform:team: "platform"
   devfest-jaen-platform:cost_center: "cc-101"
+  gcp:project: project-706bdf6b-9f8d-4eb0-92f
+encryptionsalt: v1:QmdqPHnGn/U=:v1:kr7gbyIyHCw5OLlc:Z4wzdOYeOFZu9Iu0g6B8WU1ACgvkEQ==

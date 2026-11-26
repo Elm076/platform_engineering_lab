@@ -102,6 +102,15 @@ Before walking through steps 1–9, run the pre-talk pre-provisioning script. It
 
 > **Note:** `"$GCP_PROJECT"` is optional — you can omit it if you already configured your default project with `gcloud config set project` in step 2.
 
+> **Newer GCP projects (Cloud Build `403` / `storage.objects.get`):** Newly created GCP projects run Cloud Build as the default Compute Engine service account (`<PROJECT_NUMBER>-compute@developer.gserviceaccount.com`), which no longer gets default Cloud Storage/Logging permissions. Without `roles/cloudbuild.builds.builder`, Cloud Build cannot read the uploaded source tarball or write build logs (failing step 4/5 and later `ci/cloudbuild.yaml` runs). Grant the role, wait ~30–60s for IAM propagation, and re-run `./scripts/setup_clickops.sh`:
+
+```bash
+PROJECT_NUMBER=$(gcloud projects describe "$GCP_PROJECT" --format='value(projectNumber)')
+gcloud projects add-iam-policy-binding "$GCP_PROJECT" \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudbuild.builds.builder"
+```
+
 ---
 
 ## 6. How to advance between steps
